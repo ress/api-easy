@@ -1,0 +1,1040 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <title>
+      rest-easy.js
+    </title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style>
+      body {
+        font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+        font-size: 15px;
+        line-height: 22px;
+        color: #252519;
+        margin: 0; padding: 0;
+      }
+      a {
+        color: #261a3b;
+      }
+        a:visited {
+          color: #261a3b;
+        }
+      p {
+        margin: 0 0 15px 0;
+      }
+      h4, h5, h6 {
+        color: #333;
+        margin: 6px 0 6px 0;
+        font-size: 13px;
+      }
+        h2, h3 {
+          margin-bottom: 0;
+          color: #000;
+        }
+          h1 {
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: #000;
+          }
+      #container {
+        position: relative;
+      }
+      #background {
+        position: fixed;
+        top: 0; left: 525px; right: 0; bottom: 0;
+        background: #f5f5ff;
+        border-left: 1px solid #e5e5ee;
+        z-index: -1;
+      }
+      #jump_to, #jump_page {
+        background: white;
+        -webkit-box-shadow: 0 0 25px #777; -moz-box-shadow: 0 0 25px #777;
+        -webkit-border-bottom-left-radius: 5px; -moz-border-radius-bottomleft: 5px;
+        font: 10px Arial;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-align: right;
+      }
+      #jump_to, #jump_wrapper {
+        position: fixed;
+        right: 0; top: 0;
+        padding: 5px 10px;
+      }
+        #jump_wrapper {
+          padding: 0;
+          display: none;
+        }
+          #jump_to:hover #jump_wrapper {
+            display: block;
+          }
+          #jump_page {
+            padding: 5px 0 3px;
+            margin: 0 0 25px 25px;
+          }
+            #jump_page .source {
+              display: block;
+              padding: 5px 10px;
+              text-decoration: none;
+              border-top: 1px solid #eee;
+            }
+              #jump_page .source:hover {
+                background: #f5f5ff;
+              }
+              #jump_page .source:first-child {
+              }
+      table td {
+        border: 0;
+        outline: 0;
+      }
+        td.docs, th.docs {
+          max-width: 450px;
+          min-width: 450px;
+          min-height: 5px;
+          padding: 10px 25px 1px 50px;
+          overflow-x: hidden;
+          vertical-align: top;
+          text-align: left;
+        }
+          .docs pre {
+            margin: 15px 0 15px;
+            padding-left: 15px;
+          }
+          .docs p tt, .docs p code {
+            background: #f8f8ff;
+            border: 1px solid #dedede;
+            font-size: 12px;
+            padding: 0 0.2em;
+          }
+          .pilwrap {
+            position: relative;
+          }
+            .pilcrow {
+              font: 12px Arial;
+              text-decoration: none;
+              color: #454545;
+              position: absolute;
+              top: 3px; left: -20px;
+              padding: 1px 2px;
+              opacity: 0;
+              -webkit-transition: opacity 0.2s linear;
+            }
+              td.docs:hover .pilcrow {
+                opacity: 1;
+              }
+        td.code, th.code {
+          padding: 14px 15px 16px 25px;
+          width: 100%;
+          vertical-align: top;
+          background: #f5f5ff;
+          border-left: 1px solid #e5e5ee;
+        }
+          pre, tt, code {
+            font-size: 12px; line-height: 18px;
+            font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+            margin: 0; padding: 0;
+          }
+
+
+      /*---------------------- Syntax Highlighting -----------------------------*/
+      td.linenos { background-color: #f0f0f0; padding-right: 10px; }
+      span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
+      body .hll { background-color: #ffffcc }
+      body .c { color: #408080; font-style: italic }  /* Comment */
+      body .err { border: 1px solid #FF0000 }         /* Error */
+      body .k { color: #954121 }                      /* Keyword */
+      body .o { color: #666666 }                      /* Operator */
+      body .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+      body .cp { color: #BC7A00 }                     /* Comment.Preproc */
+      body .c1 { color: #408080; font-style: italic } /* Comment.Single */
+      body .cs { color: #408080; font-style: italic } /* Comment.Special */
+      body .gd { color: #A00000 }                     /* Generic.Deleted */
+      body .ge { font-style: italic }                 /* Generic.Emph */
+      body .gr { color: #FF0000 }                     /* Generic.Error */
+      body .gh { color: #000080; font-weight: bold }  /* Generic.Heading */
+      body .gi { color: #00A000 }                     /* Generic.Inserted */
+      body .go { color: #808080 }                     /* Generic.Output */
+      body .gp { color: #000080; font-weight: bold }  /* Generic.Prompt */
+      body .gs { font-weight: bold }                  /* Generic.Strong */
+      body .gu { color: #800080; font-weight: bold }  /* Generic.Subheading */
+      body .gt { color: #0040D0 }                     /* Generic.Traceback */
+      body .kc { color: #954121 }                     /* Keyword.Constant */
+      body .kd { color: #954121; font-weight: bold }  /* Keyword.Declaration */
+      body .kn { color: #954121; font-weight: bold }  /* Keyword.Namespace */
+      body .kp { color: #954121 }                     /* Keyword.Pseudo */
+      body .kr { color: #954121; font-weight: bold }  /* Keyword.Reserved */
+      body .kt { color: #B00040 }                     /* Keyword.Type */
+      body .m { color: #666666 }                      /* Literal.Number */
+      body .s { color: #219161 }                      /* Literal.String */
+      body .na { color: #7D9029 }                     /* Name.Attribute */
+      body .nb { color: #954121 }                     /* Name.Builtin */
+      body .nc { color: #0000FF; font-weight: bold }  /* Name.Class */
+      body .no { color: #880000 }                     /* Name.Constant */
+      body .nd { color: #AA22FF }                     /* Name.Decorator */
+      body .ni { color: #999999; font-weight: bold }  /* Name.Entity */
+      body .ne { color: #D2413A; font-weight: bold }  /* Name.Exception */
+      body .nf { color: #0000FF }                     /* Name.Function */
+      body .nl { color: #A0A000 }                     /* Name.Label */
+      body .nn { color: #0000FF; font-weight: bold }  /* Name.Namespace */
+      body .nt { color: #954121; font-weight: bold }  /* Name.Tag */
+      body .nv { color: #19469D }                     /* Name.Variable */
+      body .ow { color: #AA22FF; font-weight: bold }  /* Operator.Word */
+      body .w { color: #bbbbbb }                      /* Text.Whitespace */
+      body .mf { color: #666666 }                     /* Literal.Number.Float */
+      body .mh { color: #666666 }                     /* Literal.Number.Hex */
+      body .mi { color: #666666 }                     /* Literal.Number.Integer */
+      body .mo { color: #666666 }                     /* Literal.Number.Oct */
+      body .sb { color: #219161 }                     /* Literal.String.Backtick */
+      body .sc { color: #219161 }                     /* Literal.String.Char */
+      body .sd { color: #219161; font-style: italic } /* Literal.String.Doc */
+      body .s2 { color: #219161 }                     /* Literal.String.Double */
+      body .se { color: #BB6622; font-weight: bold }  /* Literal.String.Escape */
+      body .sh { color: #219161 }                     /* Literal.String.Heredoc */
+      body .si { color: #BB6688; font-weight: bold }  /* Literal.String.Interpol */
+      body .sx { color: #954121 }                     /* Literal.String.Other */
+      body .sr { color: #BB6688 }                     /* Literal.String.Regex */
+      body .s1 { color: #219161 }                     /* Literal.String.Single */
+      body .ss { color: #19469D }                     /* Literal.String.Symbol */
+      body .bp { color: #954121 }                     /* Name.Builtin.Pseudo */
+      body .vc { color: #19469D }                     /* Name.Variable.Class */
+      body .vg { color: #19469D }                     /* Name.Variable.Global */
+      body .vi { color: #19469D }                     /* Name.Variable.Instance */
+      body .il { color: #666666 }                     /* Literal.Number.Integer.Long */
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="background"></div>
+      <table cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th class="docs">
+              <h1>
+                rest-easy.js
+              </h1>
+            </th>
+            <th class="code"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="section-1">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-1">¶</a>
+              </div>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+<span class="cm">/*</span>
+<span class="cm"> * rest-easy.js: Top-level include for the rest-easy module.</span>
+<span class="cm"> *</span>
+<span class="cm"> * (C) 2011, Charlie Robbins</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kd">var</span> <span class="nx">qs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'querystring'</span><span class="p">),</span>
+    <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">),</span>
+    <span class="nx">vows</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'vows'</span><span class="p">),</span>
+    <span class="nx">assert</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'assert'</span><span class="p">);</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-2">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-2">¶</a>
+              </div>
+              <h3>
+                Version 0.1.0 // <em>03/21/2011</em>
+              </h3>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-3">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">¶</a>
+              </div>
+              <h2>
+                RESTeasy.describe(text)
+              </h2>
+              <p>
+                This is the main (and sole) entry point for RESTeasy. It responds with an object literal that manages an underlying vows suite. Each call to <code>RESTeasy.describe()</code> will create a vows suite, with the corresponding <code>text</code> passed to this method.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">describe</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-4">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-4">¶</a>
+              </div>
+              <h3>
+                State / Context management:
+              </h3>
+              <ul>
+                <li>
+                  <code>suite</code>: The underlying vows suite
+                </li>
+                <li>
+                  <code>discussion</code>: Ordered list containing the set of text to use before each test
+                </li>
+                <li>
+                  <code>options</code>: Shared options for each test request made by this RESTeasy suite
+                </li>
+                <li>
+                  <code>paths</code>: The set of paths representing the location of the current resource / API method being tested by this object.
+                </li>
+                <li>
+                  <code>batch</code>: The object literal representing the current batch of vows tests to eventually be pass to vows <code>.addBatch()</code>.
+                </li>
+                <li>
+                  <code>batches</code>: The set of all batches that have been added to the vows <code>suite</code> associated with this object.
+                </li>
+              </ul>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">suite</span><span class="o">:</span> <span class="nx">vows</span><span class="p">.</span><span class="nx">describe</span><span class="p">(</span><span class="nx">text</span><span class="p">),</span>
+    <span class="nx">discussion</span><span class="o">:</span> <span class="p">[],</span>
+    <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">headers</span><span class="o">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="nx">paths</span><span class="o">:</span> <span class="p">[],</span>
+    <span class="nx">batch</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="nx">batches</span><span class="o">:</span> <span class="p">[],</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-5">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-5">¶</a>
+              </div>
+              <h3>
+                Add and Remove BDD Discussion
+              </h3>
+              <p>
+                Simple pathing for adding contextual description to sets of tests. Each call to discuss will create an object in the nested vows structure which has that text as the key in the parent. <strong>e.g.:</strong>
+              </p>
+              <pre>
+<code>RESTeasy.describe('your/awesome/api')
+        .use('localhost', 8080)
+        .discuss('When using your awesome API')
+          .discuss('and an awesome resource')
+          .path('/awesome-resource')
+            .get().expect(200)
+          .undiscuss().unpath()
+          .discuss('and a super resource')
+          .path('/super-resource')
+            .get().expect(404);
+</code>
+</pre>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">discuss</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">discussion</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">undiscuss</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">length</span> <span class="o">=</span> <span class="nx">length</span> <span class="o">||</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">discussion</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">length</span><span class="p">,</span> <span class="nx">length</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-6">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-6">¶</a>
+              </div>
+              <h3>
+                Setup Remote API Location / Options
+              </h3>
+              <p>
+                Configure the remote <code>host</code>, <code>port</code>, and miscellaneous <code>options</code> of the API that this suite is testing.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">use</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">host</span> <span class="cm">/* [port, options] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
+          <span class="nx">options</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">pop</span><span class="p">(),</span>
+          <span class="nx">port</span> <span class="o">=</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">host</span>   <span class="o">=</span> <span class="nx">host</span> <span class="o">||</span> <span class="s1">'localhost'</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">port</span>   <span class="o">=</span> <span class="nx">port</span> <span class="o">||</span> <span class="mi">80</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">secure</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-7">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-7">¶</a>
+              </div>
+              <p>
+                <strong>TODO <em>(indexzero)</em>:</strong> Setup <code>this.options</code> here (i.e. options for the SUITE, not the REQUEST) <em>What are useful options to expose?</em>
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-8">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-8">¶</a>
+              </div>
+              <h3>
+                Configure Headers
+              </h3>
+              <p>
+                Manipulate the HTTP headers that are sent to your API using these methods. They are designed to mimic the node.js core HTTP APIs.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">setHeaders</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">headers</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="nx">headers</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">setHeader</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">removeHeader</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-9">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-9">¶</a>
+              </div>
+              <h3>
+                Manipulate Base Path
+              </h3>
+              <p>
+                Control the base path used for a given test in this suite. Append a path by calling <code>.path()</code>. Remove the last <code>num</code> paths from the suite by calling <code>.unpath(num)</code>. Set the root path using <code>.root(path)</code>
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">path</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">uri</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">paths</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">uri</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^\/|\/$/ig</span><span class="p">,</span> <span class="s1">''</span><span class="p">));</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">unpath</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">length</span> <span class="o">=</span> <span class="nx">length</span> <span class="o">||</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">paths</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">length</span><span class="p">,</span> <span class="nx">length</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">root</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="p">[</span><span class="nx">path</span><span class="p">];</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-10">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-10">¶</a>
+              </div>
+              <h3>
+                Add HTTP Request-based Tests
+              </h3>
+              <p>
+                The <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.del()</code>, and <code>.head()</code> methods add a new context and topic to the vows structure maintained by this RESTeasy suite. The nuts and bolts of this are in the "private" method <code>_request()</code>.
+              </p>
+              <p>
+                Each method invocation returns the suite itself so that <code>.expect()</code> and other assertion method(s) can be called afterwards to add assertions to this context.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* [uri, params] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+      <span class="nx">args</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_request</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="s1">'get'</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">args</span><span class="p">));</span>
+    <span class="p">},</span>
+    <span class="nx">post</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* [uri, data, params] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_request</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="s1">'post'</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">args</span><span class="p">));</span>
+    <span class="p">},</span>
+    <span class="nx">put</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* [uri, data, params] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_request</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="s1">'put'</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">args</span><span class="p">));</span>
+    <span class="p">},</span>
+    <span class="nx">del</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* [uri, data, params] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_request</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="s1">'delete'</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">args</span><span class="p">));</span>
+    <span class="p">},</span>
+    <span class="nx">head</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* [uri, params] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+      <span class="nx">args</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_request</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="s1">'head'</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">args</span><span class="p">));</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-11">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-11">¶</a>
+              </div>
+              <h3>
+                Add Test Assertions
+              </h3>
+              <p>
+                Add test assertions with <code>.expect()</code>. There are a couple of options here:
+              </p>
+              <ol>
+                <li>Assert a response code: <code>suite.expect(200)</code>
+                </li>
+                <li>Assert a JSON result: <code>suite.expect({ some: 'value' })</code>
+                </li>
+                <li>Use a custom assertion: <code>suite.expect('should be custom', function (err, res, body) { ... })</code>
+                </li>
+              </ol>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">expect</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* [text, code, result, assert] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
+          <span class="nx">text</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">test</span><span class="p">,</span> <span class="nx">context</span><span class="p">;</span>
+      
+      <span class="nx">args</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">arg</span><span class="p">))</span> <span class="p">{</span>
+          <span class="k">case</span> <span class="s1">'number'</span><span class="o">:</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+          <span class="k">case</span> <span class="s1">'string'</span><span class="o">:</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+          <span class="k">case</span> <span class="s1">'object'</span><span class="o">:</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+          <span class="k">case</span> <span class="s1">'function'</span><span class="o">:</span> <span class="nx">test</span> <span class="o">=</span> <span class="nx">arg</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+      
+      <span class="nx">context</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_currentTest</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">);</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-12">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-12">¶</a>
+              </div>
+              <p>
+                When using a custom test assertion function, both the assertion function and a description are required or else we have no key in the JSON structure to use.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">text</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">test</span> <span class="o">||</span> <span class="nx">test</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Both description and a custom test are required.'</span><span class="p">);</span>
+      <span class="p">}</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-13">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-13">¶</a>
+              </div>
+              <p>
+                Setup the custom test assertion if we have the appropriate arguments.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">text</span> <span class="o">&amp;&amp;</span> <span class="nx">test</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">context</span><span class="p">[</span><span class="nx">text</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">assert</span><span class="p">.</span><span class="nx">isNull</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+          <span class="nx">test</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+        <span class="p">};</span>
+      <span class="p">}</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-14">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-14">¶</a>
+              </div>
+              <p>
+                Setup the response code test assertion if we have the appropriate arguments.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">code</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">context</span><span class="p">[</span><span class="s1">'should respond with '</span> <span class="o">+</span> <span class="nx">code</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">assert</span><span class="p">.</span><span class="nx">isNull</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+          <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">,</span> <span class="nx">code</span><span class="p">);</span>
+        <span class="p">};</span>
+      <span class="p">}</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-15">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-15">¶</a>
+              </div>
+              <p>
+                Setup the JSON response assertion if we have the appropriate arguments.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">context</span><span class="p">[</span><span class="s1">'should respond with '</span> <span class="o">+</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">)]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">isNull</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+            <span class="kd">var</span> <span class="nx">testResult</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">deepEqual</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">testResult</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="k">catch</span> <span class="p">(</span><span class="nx">ex</span><span class="p">)</span> <span class="p">{</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-16">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-16">¶</a>
+              </div>
+              <p>
+                In the case of a JSON parse exception we need to alert the vows suite. Not quite sure the best approach here. <strong>cloudhead?</strong>
+              </p>
+              <p>
+                <strong>TODO <em>(indexzero)</em></strong>: Something better here
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+            <span class="nx">assert</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="s1">'Error parsing JSON returned'</span><span class="p">,</span> <span class="s1">'There was an'</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">};</span>
+      <span class="p">}</span>
+      
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-17">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-17">¶</a>
+              </div>
+              <h3>
+                Perform Sequential Tests Easily
+              </h3>
+              <p>
+                Since this object literal is designed to manage a single vows suite, we need a way to add multiple batches to that suite for performing sequential tests. This is precisely what <code>.next()</code> does. It will:
+              </p>
+              <ol>
+                <li>Add the current batch (or 'vows'), <code>this.batch</code>, to the vows suite
+                </li>
+                <li>Add this same batch to the set of batches on <code>this.batches</code>
+                </li>
+                <li>Create a new empty object literal to use for <code>this.batch</code>.
+                </li>
+                <li>Reset the context for the <code>this.current</code> test.
+                </li>
+              </ol>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">next</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">reset</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nx">addBatch</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">batches</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">batch</span> <span class="o">=</span> <span class="p">{};</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-18">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-18">¶</a>
+              </div>
+              <h3>
+                Run Your Tests
+              </h3>
+              <p>
+                Again, since we are managing a single vows suite in this object we should expose an easy way to export your tests to a given target without needing to call <code>restEasySuite.suite.export(module)</code>. You should only call this method once in a given test file.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="kr">export</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+      <span class="p">}</span>
+      
+      <span class="k">this</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="kr">export</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-19">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-19">¶</a>
+              </div>
+              <h3>
+                Helpers and Utilities
+              </h3>
+              <p>
+                <code>_request()</code> exists for the sake of DRY and simplicity and is designed to handle a variety of interal usage(s) exposed indirectly through the <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.del()</code> and <code>.head()</code>. Nothing to see here unless you're interested in improving RESTeasy itself.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">_request</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* method [uri, data, params] */</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">args</span>    <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
+          <span class="nx">method</span>  <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
+          <span class="nx">uri</span>     <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'string'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
+          <span class="nx">data</span>    <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
+          <span class="nx">params</span>  <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
+          <span class="nx">port</span>    <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">!==</span> <span class="mi">80</span> <span class="o">?</span> <span class="s1">':'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">:</span> <span class="s1">''</span><span class="p">,</span>
+          <span class="nx">options</span> <span class="o">=</span> <span class="nx">clone</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">),</span>
+          <span class="nx">fullUri</span><span class="p">,</span> <span class="nx">context</span><span class="p">;</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-20">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-20">¶</a>
+              </div>
+              <p>
+                Update the fullUri for this request with the passed uri and the query string parameters (if any).
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="nx">fullUri</span> <span class="o">=</span> <span class="nx">distillPath</span><span class="p">(</span><span class="nx">uri</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">paths</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="nx">uri</span><span class="p">])</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">paths</span><span class="p">);</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-21">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-21">¶</a>
+              </div>
+              <p>
+                Append the query string parameters to the <code>fullUri</code>. It's worth mentioning here that if only a single object is provided to <code>_request()</code> it will assume that it is the request body, not the params hash.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fullUri</span> <span class="o">+=</span> <span class="s1">'?'</span> <span class="o">+</span> <span class="nx">qs</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+      <span class="p">}</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-22">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-22">¶</a>
+              </div>
+              <p>
+                If the user has provided data, assume that it is JSON and set it to the <code>body</code> property of the options.
+              </p>
+              <p>
+                <strong>TODO <em>(indexzero)</em></strong>: Expose more properties available by the <a href="http://github.com/mikeal/request">request module</a>
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-23">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-23">¶</a>
+              </div>
+              <p>
+                Set the <code>uri</code> and <code>method</code> properties of the request options using the information provided to this instance and <code>_request()</code>.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">uri</span> <span class="o">=</span> <span class="s1">'http://'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="nx">port</span> <span class="o">+</span> <span class="nx">fullUri</span><span class="p">;</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">method</span><span class="p">;</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-24">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-24">¶</a>
+              </div>
+              <p>
+                Create the description for this test. This is currently static. <strong>Remark <em>(indexzero)</em></strong>: Do users care if these strings are configurable?
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">this</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">(),</span> <span class="s1">'to'</span><span class="p">,</span> <span class="nx">fullUri</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+      <span class="nx">context</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_currentTest</span><span class="p">();</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-25">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-25">¶</a>
+              </div>
+              <p>
+                Add the topic for the specified request to the context of the current batch used by this suite.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">topic</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+          <span class="nx">request</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">};</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-26">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-26">¶</a>
+              </div>
+              <p>
+                Set the options on the topic. This is used for test assertions and the topic itself. This will allow you to customize the options used by this topic in a simple pragmatic way.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">].</span><span class="nx">topic</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-27">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-27">¶</a>
+              </div>
+              <p>
+                The vows data structure is read as a sentence constructred by keys in a nested JSON structure. This helper method is designed to get the current test context (i.e. object) by nesting into the JSON structure using this convention.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">_currentTest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">last</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">;</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-28">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-28">¶</a>
+              </div>
+              <p>
+                Nest into the batch JSON structure using the current <code>discussion</code> text.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="k">this</span><span class="p">.</span><span class="nx">discussion</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">last</span><span class="p">[</span><span class="nx">text</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">'object'</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">last</span><span class="p">[</span><span class="nx">text</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
+        <span class="p">}</span>
+        
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-29">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-29">¶</a>
+              </div>
+              <p>
+                Capture the nested object
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+        <span class="nx">last</span> <span class="o">=</span> <span class="nx">last</span><span class="p">[</span><span class="nx">text</span><span class="p">];</span>
+      <span class="p">});</span>
+      
+      <span class="k">return</span> <span class="nx">text</span> <span class="o">?</span> <span class="nx">last</span><span class="p">[</span><span class="nx">text</span><span class="p">]</span> <span class="o">:</span> <span class="nx">last</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-30">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-30">¶</a>
+              </div>
+              <p>
+                A simple function that performs a deep clone on the specified <code>obj</code>. We use this in RESTeasy to create multiple copies of the <code>options</code> passed to <code>request</code> because they are considered mutable by <code>request</code> and we strive to make each request idempotent.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+<span class="kd">function</span> <span class="nx">clone</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">copy</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="nx">copy</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">copy</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="k">instanceof</span> <span class="nb">Object</span> <span class="o">?</span> <span class="nx">clone</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">:</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">copy</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-31">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-31">¶</a>
+              </div>
+              <p>
+                Helper function used to join nested paths created by multiple calls to <code>.path()</code>.
+              </p>
+              <pre>
+<code>suite.path('/a-path')
+     .path('/hey-another-path')
+     .path(...)
+</code>
+</pre>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+<span class="kd">function</span> <span class="nx">distillPath</span> <span class="p">(</span><span class="nx">paths</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^\/|\/$/ig</span><span class="p">,</span> <span class="s1">''</span><span class="p">);</span>
+  <span class="p">}).</span><span class="nx">join</span><span class="p">(</span><span class="s1">'/'</span><span class="p">);</span>
+<span class="p">}</span>
+
+</pre>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
