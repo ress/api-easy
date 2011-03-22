@@ -6,6 +6,7 @@
     </title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <style>
+      /*--------------------- Layout and Typography ----------------------------*/
       body {
         font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
         font-size: 15px;
@@ -246,13 +247,13 @@
                 <a class="pilcrow" href="#section-2">¶</a>
               </div>
               <h3>
-                Version 0.1.0 // <em>03/21/2011</em>
+                Version 0.1.1 // <em>03/22/2011</em>
               </h3>
             </td>
             <td class="code">
               <div class="highlight">
                 <pre>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
 </pre>
               </div>
             </td>
@@ -382,12 +383,12 @@
                 <pre>
     <span class="nx">use</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">host</span> <span class="cm">/* [port, options] */</span><span class="p">)</span> <span class="p">{</span>
       <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
-          <span class="nx">options</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">pop</span><span class="p">(),</span>
+          <span class="nx">options</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">?</span> <span class="nx">args</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span> <span class="o">:</span> <span class="p">{},</span>
           <span class="nx">port</span> <span class="o">=</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
 
       <span class="k">this</span><span class="p">.</span><span class="nx">host</span>   <span class="o">=</span> <span class="nx">host</span> <span class="o">||</span> <span class="s1">'localhost'</span><span class="p">;</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">port</span>   <span class="o">=</span> <span class="nx">port</span> <span class="o">||</span> <span class="mi">80</span><span class="p">;</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">secure</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">secure</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">secure</span> <span class="o">||</span> <span class="kc">false</span><span class="p">;</span>
 </pre>
               </div>
             </td>
@@ -727,6 +728,9 @@
               <p>
                 Again, since we are managing a single vows suite in this object we should expose an easy way to export your tests to a given target without needing to call <code>restEasySuite.suite.export(module)</code>. You should only call this method once in a given test file.
               </p>
+              <p>
+                You can also call <code>.run()</code> which will run the specified suite just as if you were using vows directly.
+              </p>
             </td>
             <td class="code">
               <div class="highlight">
@@ -737,6 +741,20 @@
       <span class="p">}</span>
       
       <span class="k">this</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="kr">export</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+    <span class="nx">run</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+      <span class="p">}</span>
+      
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
+        <span class="nx">options</span> <span class="o">=</span> <span class="p">{};</span>
+      <span class="p">}</span>
+      
+      <span class="k">this</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     
@@ -846,7 +864,8 @@
             <td class="code">
               <div class="highlight">
                 <pre>
-      <span class="nx">options</span><span class="p">.</span><span class="nx">uri</span> <span class="o">=</span> <span class="s1">'http://'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="nx">port</span> <span class="o">+</span> <span class="nx">fullUri</span><span class="p">;</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">uri</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">secure</span> <span class="o">?</span> <span class="s1">'https://'</span> <span class="o">:</span> <span class="s1">'http://'</span><span class="p">;</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">uri</span> <span class="o">+=</span> <span class="k">this</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="nx">port</span> <span class="o">+</span> <span class="nx">fullUri</span><span class="p">;</span>
       <span class="nx">options</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">method</span><span class="p">;</span>
       
 </pre>
@@ -886,7 +905,7 @@
                 <pre>
       <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nx">topic</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-          <span class="nx">request</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
+          <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
         <span class="p">}</span>
       <span class="p">};</span>
 </pre>
