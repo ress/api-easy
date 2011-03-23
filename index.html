@@ -247,13 +247,13 @@
                 <a class="pilcrow" href="#section-2">¶</a>
               </div>
               <h3>
-                Version 0.1.1 // <em>03/22/2011</em>
+                Version 0.2.0 // <em>03/22/2011</em>
               </h3>
             </td>
             <td class="code">
               <div class="highlight">
                 <pre>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
 </pre>
               </div>
             </td>
@@ -295,7 +295,13 @@
                   <code>discussion</code>: Ordered list containing the set of text to use before each test
                 </li>
                 <li>
-                  <code>options</code>: Shared options for each test request made by this RESTeasy suite
+                  <code>outgoing</code>: Shared options to be passed to the <code>request</code> module on each test.
+                </li>
+                <li>
+                  <code>befores</code>: Mapping of named functions to execute before each test to modify the outgoing request options.
+                </li>
+                <li>
+                  <code>options</code>: Various configuration options for managing nuances of state / scope.
                 </li>
                 <li>
                   <code>paths</code>: The set of paths representing the location of the current resource / API method being tested by this object.
@@ -313,9 +319,11 @@
                 <pre>
     <span class="nx">suite</span><span class="o">:</span> <span class="nx">vows</span><span class="p">.</span><span class="nx">describe</span><span class="p">(</span><span class="nx">text</span><span class="p">),</span>
     <span class="nx">discussion</span><span class="o">:</span> <span class="p">[],</span>
-    <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">outgoing</span><span class="o">:</span> <span class="p">{</span>
       <span class="nx">headers</span><span class="o">:</span> <span class="p">{}</span>
     <span class="p">},</span>
+    <span class="nx">befores</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="nx">options</span><span class="o">:</span> <span class="p">{},</span>
     <span class="nx">paths</span><span class="o">:</span> <span class="p">[],</span>
     <span class="nx">batch</span><span class="o">:</span> <span class="p">{},</span>
     <span class="nx">batches</span><span class="o">:</span> <span class="p">[],</span>
@@ -428,15 +436,15 @@
               <div class="highlight">
                 <pre>
     <span class="nx">setHeaders</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">headers</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="nx">headers</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">outgoing</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="nx">headers</span><span class="p">;</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     <span class="nx">setHeader</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">outgoing</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     <span class="nx">removeHeader</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+      <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">outgoing</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     
@@ -469,7 +477,7 @@
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     <span class="nx">root</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="p">[</span><span class="nx">path</span><span class="p">];</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">paths</span> <span class="o">=</span> <span class="p">[</span><span class="nx">path</span><span class="p">];</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     
@@ -481,6 +489,34 @@
             <td class="docs">
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-10">¶</a>
+              </div>
+              <h3>
+                Dynamically set Outgoing Request Options
+              </h3>
+              <p>
+                Often it is necessary to set some HTTP options conditionally or based on results of a dynamic and/or asynchronous operation. A call to <code>.before()</code> will enqueue a function that will modify the outgoing request options before the request is made for all tests on the suite.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+    <span class="nx">before</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">befores</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">unbefore</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">befores</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-11">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-11">¶</a>
               </div>
               <h3>
                 Add HTTP Request-based Tests
@@ -522,10 +558,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-11">
+          <tr id="section-12">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-11">¶</a>
+                <a class="pilcrow" href="#section-12">¶</a>
               </div>
               <h3>
                 Add Test Assertions
@@ -564,10 +600,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-12">
+          <tr id="section-13">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-12">¶</a>
+                <a class="pilcrow" href="#section-13">¶</a>
               </div>
               <p>
                 When using a custom test assertion function, both the assertion function and a description are required or else we have no key in the JSON structure to use.
@@ -584,10 +620,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-13">
+          <tr id="section-14">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-13">¶</a>
+                <a class="pilcrow" href="#section-14">¶</a>
               </div>
               <p>
                 Setup the custom test assertion if we have the appropriate arguments.
@@ -607,10 +643,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-14">
+          <tr id="section-15">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-14">¶</a>
+                <a class="pilcrow" href="#section-15">¶</a>
               </div>
               <p>
                 Setup the response code test assertion if we have the appropriate arguments.
@@ -630,10 +666,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-15">
+          <tr id="section-16">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-15">¶</a>
+                <a class="pilcrow" href="#section-16">¶</a>
               </div>
               <p>
                 Setup the JSON response assertion if we have the appropriate arguments.
@@ -654,10 +690,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-16">
+          <tr id="section-17">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-16">¶</a>
+                <a class="pilcrow" href="#section-17">¶</a>
               </div>
               <p>
                 In the case of a JSON parse exception we need to alert the vows suite. Not quite sure the best approach here. <strong>cloudhead?</strong>
@@ -681,10 +717,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-17">
+          <tr id="section-18">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-17">¶</a>
+                <a class="pilcrow" href="#section-18">¶</a>
               </div>
               <h3>
                 Perform Sequential Tests Easily
@@ -706,21 +742,22 @@
             <td class="code">
               <div class="highlight">
                 <pre>
-    <span class="nx">next</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">reset</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">next</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nx">addBatch</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">);</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">batches</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">batch</span><span class="p">);</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">batch</span> <span class="o">=</span> <span class="p">{};</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
     
 </pre>
               </div>
             </td>
           </tr>
-          <tr id="section-18">
+          <tr id="section-19">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-18">¶</a>
+                <a class="pilcrow" href="#section-19">¶</a>
               </div>
               <h3>
                 Run Your Tests
@@ -749,7 +786,7 @@
         <span class="k">this</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
       <span class="p">}</span>
       
-      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">callback</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
         <span class="nx">options</span> <span class="o">=</span> <span class="p">{};</span>
       <span class="p">}</span>
@@ -762,10 +799,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-19">
+          <tr id="section-20">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-19">¶</a>
+                <a class="pilcrow" href="#section-20">¶</a>
               </div>
               <h3>
                 Helpers and Utilities
@@ -778,23 +815,24 @@
               <div class="highlight">
                 <pre>
     <span class="nx">_request</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* method [uri, data, params] */</span><span class="p">)</span> <span class="p">{</span>
-      <span class="kd">var</span> <span class="nx">args</span>    <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
+      <span class="kd">var</span> <span class="nx">self</span>    <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+          <span class="nx">args</span>    <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
           <span class="nx">method</span>  <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
           <span class="nx">uri</span>     <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'string'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
           <span class="nx">data</span>    <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
           <span class="nx">params</span>  <span class="o">=</span> <span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'object'</span> <span class="o">&amp;&amp;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span>
           <span class="nx">port</span>    <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">!==</span> <span class="mi">80</span> <span class="o">?</span> <span class="s1">':'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">:</span> <span class="s1">''</span><span class="p">,</span>
-          <span class="nx">options</span> <span class="o">=</span> <span class="nx">clone</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">),</span>
+          <span class="nx">outgoing</span> <span class="o">=</span> <span class="nx">clone</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">outgoing</span><span class="p">),</span>
           <span class="nx">fullUri</span><span class="p">,</span> <span class="nx">context</span><span class="p">;</span>
       
 </pre>
               </div>
             </td>
           </tr>
-          <tr id="section-20">
+          <tr id="section-21">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-20">¶</a>
+                <a class="pilcrow" href="#section-21">¶</a>
               </div>
               <p>
                 Update the fullUri for this request with the passed uri and the query string parameters (if any).
@@ -809,10 +847,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-21">
+          <tr id="section-22">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-21">¶</a>
+                <a class="pilcrow" href="#section-22">¶</a>
               </div>
               <p>
                 Append the query string parameters to the <code>fullUri</code>. It's worth mentioning here that if only a single object is provided to <code>_request()</code> it will assume that it is the request body, not the params hash.
@@ -829,10 +867,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-22">
+          <tr id="section-23">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-22">¶</a>
+                <a class="pilcrow" href="#section-23">¶</a>
               </div>
               <p>
                 If the user has provided data, assume that it is JSON and set it to the <code>body</code> property of the options.
@@ -845,28 +883,8 @@
               <div class="highlight">
                 <pre>
       <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">options</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+        <span class="nx">outgoing</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
       <span class="p">}</span>
-      
-</pre>
-              </div>
-            </td>
-          </tr>
-          <tr id="section-23">
-            <td class="docs">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-23">¶</a>
-              </div>
-              <p>
-                Set the <code>uri</code> and <code>method</code> properties of the request options using the information provided to this instance and <code>_request()</code>.
-              </p>
-            </td>
-            <td class="code">
-              <div class="highlight">
-                <pre>
-      <span class="nx">options</span><span class="p">.</span><span class="nx">uri</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">secure</span> <span class="o">?</span> <span class="s1">'https://'</span> <span class="o">:</span> <span class="s1">'http://'</span><span class="p">;</span>
-      <span class="nx">options</span><span class="p">.</span><span class="nx">uri</span> <span class="o">+=</span> <span class="k">this</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="nx">port</span> <span class="o">+</span> <span class="nx">fullUri</span><span class="p">;</span>
-      <span class="nx">options</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">method</span><span class="p">;</span>
       
 </pre>
               </div>
@@ -876,6 +894,26 @@
             <td class="docs">
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-24">¶</a>
+              </div>
+              <p>
+                Set the <code>uri</code> and <code>method</code> properties of the request options <code>outgoing</code> using the information provided to this instance and <code>_request()</code>.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="nx">outgoing</span><span class="p">.</span><span class="nx">uri</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">secure</span> <span class="o">?</span> <span class="s1">'https://'</span> <span class="o">:</span> <span class="s1">'http://'</span><span class="p">;</span>
+      <span class="nx">outgoing</span><span class="p">.</span><span class="nx">uri</span> <span class="o">+=</span> <span class="k">this</span><span class="p">.</span><span class="nx">host</span> <span class="o">+</span> <span class="nx">port</span> <span class="o">+</span> <span class="nx">fullUri</span><span class="p">;</span>
+      <span class="nx">outgoing</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">method</span><span class="p">;</span>
+      
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-25">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-25">¶</a>
               </div>
               <p>
                 Create the description for this test. This is currently static. <strong>Remark <em>(indexzero)</em></strong>: Do users care if these strings are configurable?
@@ -891,10 +929,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-25">
+          <tr id="section-26">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-25">¶</a>
+                <a class="pilcrow" href="#section-26">¶</a>
               </div>
               <p>
                 Add the topic for the specified request to the context of the current batch used by this suite.
@@ -905,29 +943,6 @@
                 <pre>
       <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nx">topic</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-          <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
-        <span class="p">}</span>
-      <span class="p">};</span>
-</pre>
-              </div>
-            </td>
-          </tr>
-          <tr id="section-26">
-            <td class="docs">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-26">¶</a>
-              </div>
-              <p>
-                Set the options on the topic. This is used for test assertions and the topic itself. This will allow you to customize the options used by this topic in a simple pragmatic way.
-              </p>
-            </td>
-            <td class="code">
-              <div class="highlight">
-                <pre>
-      <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">].</span><span class="nx">topic</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
-      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">},</span>
-    
 </pre>
               </div>
             </td>
@@ -936,6 +951,50 @@
             <td class="docs">
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-27">¶</a>
+              </div>
+              <p>
+                Before making the outgoing HTTP request for this topic, execute all known before funtions available to this suite. These functions are by definition synchronous add vows before a given test if this data is fetched asynchronously.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+          <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">befores</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">outgoing</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">befores</span><span class="p">[</span><span class="nx">name</span><span class="p">](</span><span class="nx">outgoing</span><span class="p">);</span>
+          <span class="p">});</span> 
+          
+          <span class="nx">request</span><span class="p">(</span><span class="nx">outgoing</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">};</span>
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-28">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-28">¶</a>
+              </div>
+              <p>
+                Set the outgoing request options and set of before functions on the topic. This is used for test assertions, general consistency, and basically just knowing what every topic does explicitly.
+              </p>
+            </td>
+            <td class="code">
+              <div class="highlight">
+                <pre>
+      <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">].</span><span class="nx">topic</span><span class="p">.</span><span class="nx">outgoing</span> <span class="o">=</span> <span class="nx">outgoing</span><span class="p">;</span>
+      <span class="nx">context</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">current</span><span class="p">].</span><span class="nx">topic</span><span class="p">.</span><span class="nx">before</span>   <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">befores</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    
+</pre>
+              </div>
+            </td>
+          </tr>
+          <tr id="section-29">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-29">¶</a>
               </div>
               <p>
                 The vows data structure is read as a sentence constructred by keys in a nested JSON structure. This helper method is designed to get the current test context (i.e. object) by nesting into the JSON structure using this convention.
@@ -951,10 +1010,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-28">
+          <tr id="section-30">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-28">¶</a>
+                <a class="pilcrow" href="#section-30">¶</a>
               </div>
               <p>
                 Nest into the batch JSON structure using the current <code>discussion</code> text.
@@ -972,10 +1031,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-29">
+          <tr id="section-31">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-29">¶</a>
+                <a class="pilcrow" href="#section-31">¶</a>
               </div>
               <p>
                 Capture the nested object
@@ -995,10 +1054,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-30">
+          <tr id="section-32">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-30">¶</a>
+                <a class="pilcrow" href="#section-32">¶</a>
               </div>
               <p>
                 A simple function that performs a deep clone on the specified <code>obj</code>. We use this in RESTeasy to create multiple copies of the <code>options</code> passed to <code>request</code> because they are considered mutable by <code>request</code> and we strive to make each request idempotent.
@@ -1024,10 +1083,10 @@
               </div>
             </td>
           </tr>
-          <tr id="section-31">
+          <tr id="section-33">
             <td class="docs">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-31">¶</a>
+                <a class="pilcrow" href="#section-33">¶</a>
               </div>
               <p>
                 Helper function used to join nested paths created by multiple calls to <code>.path()</code>.
